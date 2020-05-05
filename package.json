@@ -6,6 +6,7 @@
   "keywords": [],
   "dependencies": {
     "arangojs": "6.13.0",
+    "await-timeout": "1.1.1",
     "sails": "^1.2.3",
     "grunt": "1.0.4",
     "sails-hook-grunt": "^4.0.0",

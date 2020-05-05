@@ -19,14 +19,31 @@ module.exports = {
 
 		sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Starting...`);
 
+        // Use the helper function to execute the query
         let allEmployees = await sails.helpers.arangoQuery.with({
             requestId: REQUEST_ID,
-            query: 'FOR employee IN employee RETURN employee'
+            query: 'FOR person IN persons RETURN person'
         });
 
+        // Handle the possible errors returned by the helper function
+        if(allEmployees && allEmployees.status === "error") {
+            // If the error is a logical error, return a response with status 400
+            if(allEmployees.data && allEmployees.data.errorCode && allEmployees.data.errorCode === 400)
+                return exits.logicalError({
+                    status: 'LOGICAL_ERROR',
+                    data: allEmployees.data.message
+                });
+
+            // If the error is a server error, return a response with status 500
+            return exits.serverError({
+                status: 'SERVER_ERROR',
+                data: allEmployees.data.message
+            });
+        }
+        
         return exits.success({
             status: 'success',
-            data: allEmployees
+            data: allEmployees.data
         });
     }
 }

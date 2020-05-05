@@ -10,19 +10,19 @@
 
 module.exports.custom = {
 	responseTypes: {
-		unauthorized: {
+		forbidden: {
 			description: 'This response type informs the client that an unauthorized action has been requested',
-			responseType: 'unauthorized',
-			statusCode: 401
+			responseType: 'forbidden',
+			statusCode: 403
 		},
-		handledError: {
+		logicalError: {
 			description: 'This response type informs the client that there was an error, specifically handled by the respective microservice',
-			responseType: 'handledError',
+			responseType: 'logicalError',
 			statusCode: 400
 		},
-		unhandledError: {
+		serverError: {
 			description: 'This response type informs the client that an unexpected error has occurred in the catch block of the action',
-			responseType: 'unhandledError',
+			responseType: 'serverError',
 			statusCode: 500
 		},
 	},
