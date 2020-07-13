@@ -3,5 +3,8 @@ module.exports.routes = {
 
 	'GET /persons': { action: 'person/get-persons' },
 	'GET /person/:id': { action: 'person/get-person-details' },
-	'POST /person' : {action: 'person/create-person'}
+	'POST /person' : {action: 'person/create-person'},
+	'DELETE /person/:id' : {action: 'person/delete-person'},
+
+	'POST /login': { action: 'authentication/login'}
 };

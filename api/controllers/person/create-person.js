@@ -53,7 +53,9 @@ module.exports = {
         const REQUEST_ID = this.req.requestId;
 		const FILE_PATH = __filename.split('controllers')[1];
 
-		sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Starting...`);
+        sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Starting...`);
+
+        inputs.password = await sails.helpers.bcryptHelper.with({action: "hashPassword", password: inputs.password, requestId: REQUEST_ID});
 
         sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Attempting to create a new person with email ${inputs.email} in the database...`);
         // Use the helper function to fetch all the persons
@@ -133,6 +135,6 @@ module.exports = {
         // Return a successful response
         sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Successfully created a new person record.`);
         
-        return exits.success(createPerson);
+        return exits.success({status: "success", data: createPerson});
     }
 }
