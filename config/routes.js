@@ -2,4 +2,6 @@ module.exports.routes = {
 	'GET /health': { action: 'health-check' },
 
 	'GET /persons': { action: 'person/get-persons' },
+	'GET /person/:id': { action: 'person/get-person-details' },
+	'POST /person' : {action: 'person/create-person'}
 };
