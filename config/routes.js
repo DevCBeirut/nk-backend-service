@@ -6,5 +6,6 @@ module.exports.routes = {
 	'POST /person' : {action: 'person/create-person'},
 	'DELETE /person/:id' : {action: 'person/delete-person'},
 
-	'POST /login': { action: 'authentication/login'}
+	'POST /login': { action: 'authentication/login'},
+	'PUT /token/refresh': {action: 'authentication/refresh-token'}
 };

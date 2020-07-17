@@ -1,1 +1,0 @@
-{"parent":null,"pid":14578,"argv":["/usr/bin/node","/usr/bin/npm","run","unitTest"],"execArgv":[],"cwd":"/opt/nk-microservices/nk-backend-service","time":1589734004892,"ppid":14561,"coverageFilename":"/opt/nk-microservices/nk-backend-service/.nyc_output/93a83c29-b0e5-432e-9e1f-1d370e213d8f.json","externalId":"","uuid":"93a83c29-b0e5-432e-9e1f-1d370e213d8f","files":[]}

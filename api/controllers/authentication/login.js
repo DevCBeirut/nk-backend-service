@@ -19,7 +19,7 @@ module.exports = {
             minLength: 8,
             maxLength: 32,
             required: true
-        },
+        }
     },
     
     exits: sails.config.custom.responseTypes,
@@ -93,9 +93,25 @@ module.exports = {
             });
         }
 
+        // Create JWT Access and Refresh tokens
+        let tokens = await sails.helpers.createJwtTokens.with(
+            {
+                requestId: REQUEST_ID, 
+                email: person.data[0].email, 
+                isAdmin: person.data[0].isAdmin ? person.data[0].isAdmin : false
+            }
+        );
+
+        // If unable to generate tokens, return a server error response
+        if(tokens.status && tokens.status === "error")
+            return exits.serverError(tokens);
+
         return exits.success({
             status: 'success',
-            data: person.data
+            data: {
+                user: person.data[0],
+                tokens: tokens.data
+            }
         });
     }
 }
