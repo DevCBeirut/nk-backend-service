@@ -42,5 +42,9 @@ module.exports.custom = {
 				url: `http://${process.env.ARANGODB_USERNAME}:${process.env.ARANGODB_PASSWORD}@${process.env.ARANGODB_HOST}:${process.env.ARANGODB_PORT}/`,
 			}).useDatabase(process.env.ARANGODB_DB_NAME);
 		return connection;
+	},
+	arangoInfo: {
+		maxRetryAttempts: process.env.ARANGO_MAX_RETRY_ATTEMPTS ? parseInt(process.env.ARANGO_MAX_RETRY_ATTEMPTS) : 3,
+		retryDelay: process.env.ARANGO_RETRY_DELAY ? parseInt(process.env.ARANGO_RETRY_DELAY) : 250
 	}
 };

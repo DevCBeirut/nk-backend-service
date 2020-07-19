@@ -36,11 +36,13 @@ module.exports = {
         const timeout = require("await-timeout");
         // Initialize the filename. This variable will be used for logging purposes 
         const FILE_PATH = __filename.split('helpers')[1];
-        const ARANGO_CLIENT = sails.config.custom.arangoClient();
+        const ARANGO_CLIENT = new require('arangojs')(
+			{
+				url: `http://${process.env.ARANGODB_USERNAME}:${process.env.ARANGODB_PASSWORD}@${process.env.ARANGODB_HOST}:${process.env.ARANGODB_PORT}/`,
+			}).useDatabase(process.env.ARANGODB_DB_NAME);
 
         // A counter that allows to attempt to perform the query three times before generating an error
         let transactionAttemptCounter = 1;
-        const MAX_ATTEMPS = 3
         // A variable that will hold the transaction result that must be returned
         let arangoTransactionResult;
 
@@ -58,7 +60,7 @@ module.exports = {
                 return exits.success(arangoTransactionResult);
             } catch (error) {
                 // If the maximum number of query attempts is exceeded, generate an error
-                if(transactionAttemptCounter === MAX_ATTEMPS) {
+                if(transactionAttemptCounter === sails.config.custom.arangoInfo.maxRetryAttempts) {
                     sails.log.warn(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: Exceeded maximum number of attempts. Exiting with an error.`);
 
                     ARANGO_CLIENT.close();
@@ -91,10 +93,10 @@ module.exports = {
                 }
 
                 // If the maximum number of attempts is not exceeded, log the error, increment the counter, and retry the query after a certain timeout
-                sails.log.error(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: Error while executing the transaction. Attempt ${transactionAttemptCounter} out of ${MAX_ATTEMPS}.`);
+                sails.log.error(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: Error while executing the transaction. Attempt ${transactionAttemptCounter} out of ${sails.config.custom.arangoInfo.maxRetryAttempts}.`);
                 sails.log.error(error);
                 transactionAttemptCounter++;
-                await timeout.set(250);
+                await timeout.set(sails.config.custom.arangoInfo.retryDelay);
             }
         }
     }
