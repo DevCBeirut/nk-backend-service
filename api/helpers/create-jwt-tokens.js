@@ -72,7 +72,7 @@ module.exports = {
                     expiresIn: sails.config.custom.jwt.refreshTokenValidity
                 }
             );
-            sails.log.info(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: Successfully created a JWT Access Token for ${inputs.email}`)
+            sails.log.info(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: Successfully created a JWT Refresh Token for ${inputs.email}`)
             sails.log.info(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: ${refreshToken}`);
 
             return exits.success(
