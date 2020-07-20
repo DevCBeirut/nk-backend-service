@@ -24,7 +24,7 @@ module.exports = {
 
     fn: async function (inputs, exits) {
         const jwt = require("jsonwebtoken");
-        const REQUEST_ID = this.req.requestId;
+        const REQUEST_ID = this.req.headers.requestId;
         const FILE_PATH = __filename.split('controllers')[1];
 
         sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Starting...`);

@@ -20,7 +20,7 @@ module.exports = {
     fn: async function (inputs, exits) {
 
         // Initialize the request ID and the filename. These variables will be used for logging and tracing purposes
-        const REQUEST_ID = this.req.requestId;
+        const REQUEST_ID = this.req.headers.requestId;
 		const FILE_PATH = __filename.split('controllers')[1];
 
 		sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Starting...`);

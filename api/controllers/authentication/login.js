@@ -27,11 +27,9 @@ module.exports = {
     fn: async function (inputs, exits) {
 
         // Initialize the request ID and the filename. These variables will be used for logging and tracing purposes
-        const REQUEST_ID = this.req.requestId;
+        const REQUEST_ID = this.req.headers.requestId;
         const FILE_PATH = __filename.split('controllers')[1];
         
-        const BCRYPT = require("bcrypt");
-
 		sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Starting...`);
 
         sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Attempting to log ${inputs.email} in...`);
@@ -49,7 +47,7 @@ module.exports = {
             if(person.data && person.data.errorCode && person.data.errorCode === 400) {
                 sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Logical error detected when querying the database. Returning a Logical error response`);
                 return exits.logicalError({
-                    status: 'LOGICAL_ERROR',
+                    status: 'logicalError',
                     data: person.data.message
                 });
             }
@@ -57,7 +55,7 @@ module.exports = {
             sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when querying the database. Returning a server error response`);
             // If the error is a server error, return a response with status 500
             return exits.serverError({
-                status: 'SERVER_ERROR',
+                status: 'serverError',
                 data: person.data.message
             });
         }
@@ -67,7 +65,7 @@ module.exports = {
             person.data = [];
             sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Unable to find any person record with email ${inputs.email} in the database.`);
             return exits.logicalError({
-                status: 'LOGICAL_ERROR',
+                status: 'logicalError',
                 data: `Unable to find any person record with email ${inputs.email} in the database.`
             });
         }
@@ -88,7 +86,7 @@ module.exports = {
         if(!passwordMatch) {
             sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: the password entered does not match the user's password. Exiting...`);
             return exits.forbidden({
-                status: "error",
+                status: "forbidden",
                 data: "Password is incorrect"
             });
         }
@@ -104,7 +102,10 @@ module.exports = {
 
         // If unable to generate tokens, return a server error response
         if(tokens.status && tokens.status === "error")
-            return exits.serverError(tokens);
+            return exits.serverError({
+                status: "serverError",
+                data: tokens
+            });
 
         return exits.success({
             status: 'success',

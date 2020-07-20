@@ -13,7 +13,7 @@ module.exports = {
 	fn : async function(inputs, exits) {
 		return exits.success({
 			status: "success",
-			data: "The backend service is running"
+			data: "The gateway service is running"
 		});
 	}
 };

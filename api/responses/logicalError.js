@@ -1,7 +1,7 @@
 module.exports = function logicalEror(data) {
 	if(!data)
 		data = {
-			status: "error",
+			status: "logicalError",
 			message: "Logical Error"
 		}
 	return this.res.status(400).send(data);
