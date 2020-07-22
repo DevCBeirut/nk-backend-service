@@ -44,40 +44,22 @@ module.exports = {
             queryParams: { personId: inputs.id, timestamp: + new Date()}
         });
 
-        // Handle the possible errors returned by the helper function
-        if(deletedPerson && deletedPerson.status === "error") {
-            // If the error is a logical error, return a response with status 400
-            if(deletedPerson.data && deletedPerson.data.errorCode && deletedPerson.data.errorCode === 400) {
-                sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Logical error detected when querying the database. Returning a Logical error response`);
-                return exits.logicalError({
-                    status: 'LOGICAL_ERROR',
-                    data: deletedPerson.data.message
-                });
-            }
-
-            sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when querying the database. Returning a server error response`);
-            // If the error is a server error, return a response with status 500
-            return exits.serverError({
-                status: 'SERVER_ERROR',
-                data: deletedPerson.data.message
-            });
-        }
+        if(deletedPerson && deletedPerson.status === "serverError")
+            sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when deleting person record with ID ${inputs.id}`);
         
-        // If no person record was found in the database, log it.
-        if(!deletedPerson.data || deletedPerson.data.length === 0) {
-            deletedPerson.data = [];
+        else if(deletedPerson && deletedPerson.status === "logicalError")
+            sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Logical error detected when deleting person record with ID ${inputs.id}`);
+        
+        else if(!deletedPerson.data || deletedPerson.data.length === 0) {
             sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Unable to find any person record with ID ${inputs.id} in the database.`);
-            return exits.logicalError({
-                status: 'error',
-                data: []
-            });
+            deletedPerson = {
+                status: 'logicalError',
+                data: `Unable to find any person record with ID ${inputs.id} in the database.`
+            };
         }
         else 
-            sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Successfully deleted a person record for person ID: ${inputs.id}`);
+            sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Successfully deleted person record with ID ${inputs.id}`);
         
-        return exits.success({
-            status: 'success',
-            data: deletedPerson.data
-        });
+        return exits[deletedPerson.status](deletedPerson)
     }
 }

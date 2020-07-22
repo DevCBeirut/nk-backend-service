@@ -26,36 +26,22 @@ module.exports = {
             query: 'FOR person IN persons FILTER person.isActive == true RETURN person'
         });
 
-        // Handle the possible errors returned by the helper function
-        if(allPersons && allPersons.status === "error") {
-            // If the error is a logical error, return a response with status 400
-            if(allPersons.data && allPersons.data.errorCode && allPersons.data.errorCode === 400) {
-                sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Logical error detected when querying the database. Returning a Logical error response`);
-                return exits.logicalError({
-                    status: 'LOGICAL_ERROR',
-                    data: allPersons.data.message
-                });
-            }
-
-            sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when querying the database. Returning a server error response`);
-            // If the error is a server error, return a response with status 500
-            return exits.serverError({
-                status: 'SERVER_ERROR',
-                data: allPersons.data.message
-            });
-        }
+        if(allPersons && allPersons.status === "serverError")
+        sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when fetching the person records from the database`);
         
-        // If no records were found in the database, log it
-        if(!allPersons.data || allPersons.data.length === 0) {
-            allPersons.data = [];
+        else if(allPersons && allPersons.status === "logicalError")
+            sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Logical error detected when fetching the person records from the database`);
+        
+        else if(!allPersons.data || allPersons.data.length === 0) {
             sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Unable to find any person record in the database.`);
+            person = {
+                status: 'logicalError',
+                data: `Unable to find any person records in the database.`
+            };
         }
         else 
-            sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Returning ${allPersons.data.length} person records.`);
+            sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Successfully fetched all the person records from the database`);
         
-        return exits.success({
-            status: 'success',
-            data: allPersons.data
-        });
+        return exits[allPersons.status](allPersons);
     }
 }

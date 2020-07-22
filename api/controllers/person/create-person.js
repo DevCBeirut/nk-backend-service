@@ -113,28 +113,13 @@ module.exports = {
             params: inputs
         });
 
-        // Handle the possible errors returned by the helper function
-        if(createPerson && createPerson.status === "error") {
-            // If the error is a logical error, return a response with status 400
-            if(createPerson.data && createPerson.data.errorCode && createPerson.data.errorCode === 400) {
-                sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Logical error detected when creating a person record in the database. Returning a logical error response`);
-                return exits.logicalError({
-                    status: 'LOGICAL_ERROR',
-                    data: createPerson.data.message
-                });
-            }
-
+        if(createPerson && createPerson.status === "serverError")
             sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when creating a person record in the database. Returning a server error response`);
-            // If the error is a server error, return a response with status 500
-            return exits.serverError({
-                status: 'SERVER_ERROR',
-                data: createPerson.data.message
-            });
-        }
+        else if(createPerson && createPerson.status === "logicalError")
+            sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Logical error detected when creating a person record in the database. Returning a logical error response`);
+        else 
+            sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Successfully created a new person record.`);
         
-        // Return a successful response
-        sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Successfully created a new person record.`);
-        
-        return exits.success({status: "success", data: createPerson});
+        return exits[createPerson.status](createPerson);
     }
 }

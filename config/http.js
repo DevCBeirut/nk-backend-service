@@ -47,7 +47,7 @@ module.exports.http = {
 	requestIdGenerator: (function () {
 			return function (req, res, cb) {
 				if (req.url !== '/health' && !req.headers.requestId) {
-					req.headers.requestId = Math.floor(Math.random() * Math.floor(99999)) + new Date().getTime();
+					req.headers.requestId = req.headers.requestid ? req.headers.requestid : Math.floor(Math.random() * Math.floor(99999)) + new Date().getTime();
 					sails.log.info(`Incoming Request ID: ${req.headers.requestId}, { ${req.method}: ${req.url}}`);
 				}
 				return cb();

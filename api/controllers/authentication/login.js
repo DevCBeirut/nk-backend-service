@@ -42,22 +42,14 @@ module.exports = {
         });
 
         // Handle the possible errors returned by the helper function
-        if(person && person.status === "error") {
+        if(person && (person.status === "serverError" || person.status === "logicalError")) {
             // If the error is a logical error, return a response with status 400
-            if(person.data && person.data.errorCode && person.data.errorCode === 400) {
+            if(person.status === "logicalError") 
                 sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Logical error detected when querying the database. Returning a Logical error response`);
-                return exits.logicalError({
-                    status: 'logicalError',
-                    data: person.data.message
-                });
-            }
-
-            sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when querying the database. Returning a server error response`);
+            else
+                sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when querying the database. Returning a server error response`);
             // If the error is a server error, return a response with status 500
-            return exits.serverError({
-                status: 'serverError',
-                data: person.data.message
-            });
+            return exits[person.status](person);
         }
         
         // If no person record was found in the database, log it and exit.

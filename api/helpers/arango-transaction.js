@@ -68,11 +68,8 @@ module.exports = {
                     sails.log.error(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: Arango server error found.`);
                     sails.log.error(error);
                     return exits.success({
-                        status: 'error',
-                        data: {
-                            errorCode: 500,
-                            message: "ArangoDB server error while executing the query"
-                        }
+                        status: 'serverError',
+                        data: "ArangoDB server error while executing the query"
                     });
 
                 }
@@ -84,11 +81,8 @@ module.exports = {
 
                     ARANGO_CLIENT.close();
                     return exits.success({
-                        status: 'error',
-                        data: {
-                            errorCode: 400,
-                            message: error.response.body.errorMessage
-                        }
+                        status: 'logicalError',
+                        data: error.response.body.errorMessage
                     })
                 }
 

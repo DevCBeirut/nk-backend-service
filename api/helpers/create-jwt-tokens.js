@@ -88,7 +88,7 @@ module.exports = {
             sails.log.warn(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: Unable to create JWT Tokens for ${inputs.email}`)
             sails.log.warn(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: ${error}`);
 
-            return exits.success({status: "error", data: "Unable to create JWT Tokens"})
+            return exits.success({status: "serverError", data: "Unable to create JWT Tokens"})
         }
     }
 }
