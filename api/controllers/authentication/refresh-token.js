@@ -46,6 +46,7 @@ module.exports = {
             {
                 requestId: REQUEST_ID, 
                 email: data.data.email,
+                personId: data.data.personId,
                 isAdmin: data.data.isAdmin ? data.data.isAdmin : false
             }
         );

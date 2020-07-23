@@ -36,7 +36,6 @@ module.exports = {
         // Initialize the filename. This variable will be used for logging purposes 
         const FILE_PATH = __filename.split('helpers')[1];
         const jwt = require("jsonwebtoken");
-
         try {
             // Create a JWT access Token
             sails.log.info(`Helper ${FILE_PATH} -- Request ID ${inputs.requestId}: Creating a JWT Access Token for ${inputs.email}`)
