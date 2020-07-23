@@ -77,8 +77,8 @@ module.exports = {
         // If the passwords don't match, returm am error
         if(!passwordMatch) {
             sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: the password entered does not match the user's password. Exiting...`);
-            return exits.forbidden({
-                status: "forbidden",
+            return exits.logicalError({
+                status: "logicalError",
                 data: "Password is incorrect"
             });
         }
@@ -87,7 +87,8 @@ module.exports = {
         let tokens = await sails.helpers.createJwtTokens.with(
             {
                 requestId: REQUEST_ID, 
-                email: person.data[0].email, 
+                email: person.data[0].email,
+                personId: person.data[0]._key, 
                 isAdmin: person.data[0].isAdmin ? person.data[0].isAdmin : false
             }
         );

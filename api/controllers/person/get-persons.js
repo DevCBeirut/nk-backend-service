@@ -27,7 +27,7 @@ module.exports = {
         });
 
         if(allPersons && allPersons.status === "serverError")
-        sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when fetching the person records from the database`);
+            sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Server error detected when fetching the person records from the database`);
         
         else if(allPersons && allPersons.status === "logicalError")
             sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Logical error detected when fetching the person records from the database`);

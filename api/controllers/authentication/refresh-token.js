@@ -36,7 +36,7 @@ module.exports = {
         } catch (error) {
             sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Invalid Refresh Token. Exiting`);
             sails.log.warn(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: ${error.name}, ${error.message}, ${error.expiredAt}`);
-            return exits.unauthorized({status: "error", data: "Invalid Refresh Token"});
+            return exits.unauthorized({status: "unauthorized", data: "Invalid Refresh Token"});
         }
 
         sails.log.info(`Controller ${FILE_PATH} -- Request ID ${REQUEST_ID}: Successfully verified the validity of the refresh token`);

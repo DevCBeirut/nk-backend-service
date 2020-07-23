@@ -42,6 +42,12 @@ module.exports = {
             description: 'Date of birth YYYY-MM-DD',
             required: true,
             regex: /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/
+        },
+        isAdmin: {
+            type: 'boolean',
+            description: 'Specifies if the user is an admin or not',
+            required: false,
+            defaultsTo: false
         }
     },
     
@@ -92,6 +98,7 @@ module.exports = {
                             age: params.age,
                             dob: params.dob,
                             email: params.email,
+                            isAdmin: params.isAdmin,
                             password: params.password,
                             createdAt: + new Date(),
                             updatedAt: + new Date(),

@@ -22,6 +22,11 @@ module.exports = {
 			type: 'string',
 			required: true,
 			description: 'The ID of the incoming request. The request ID is used for tracing purposes'
+        },
+        personId: {
+			type: 'string',
+			required: true,
+			description: 'The Arango ID of the person'
         }
     },
 
@@ -41,6 +46,7 @@ module.exports = {
                         email: inputs.email,
                         isActive: true,
                         isAdmin: inputs.isAdmin,
+                        personId: inputs.personId,
                         date: new Date()
                     }
                 }, 
@@ -62,6 +68,7 @@ module.exports = {
                         email: inputs.email,
                         isActive: true,
                         isAdmin: inputs.isAdmin,
+                        personId: inputs.personId,
                         date: new Date()
                     }
                 }, 
