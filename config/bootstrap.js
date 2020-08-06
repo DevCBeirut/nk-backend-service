@@ -9,22 +9,69 @@
  * https://sailsjs.com/config/bootstrap
  */
 
-module.exports.bootstrap = async function() {
+module.exports.bootstrap = async (cb) => {
 
-  // By convention, this is a good place to set up fake data during development.
-  //
-  // For example:
-  // ```
-  // // Set up fake development data (or if we already have some, avast)
-  // if (await User.count() > 0) {
-  //   return;
-  // }
-  //
-  // await User.createEach([
-  //   { emailAddress: 'ry@example.com', fullName: 'Ryan Dahl', },
-  //   { emailAddress: 'rachael@example.com', fullName: 'Rachael Shaw', },
-  //   // etc.
-  // ]);
-  // ```
+	const FILE_PATH = __filename.split('config')[1];
+    const ARANGO_CLIENT = require('arangojs');
+      
+    const db = new ARANGO_CLIENT.Database({
+        url: `http://${process.env.ARANGODB_USERNAME}:${process.env.ARANGODB_PASSWORD}@${process.env.ARANGODB_HOST}:${process.env.ARANGODB_PORT}/`,
+    });
+
+	try {
+		sails.log.info(`${FILE_PATH}: Attempting to initialize the required database and collection`);
+		sails.log.info(`${FILE_PATH}: fetching the available databases`);
+		// List all the databases available
+		const dbNames = await db.listDatabases();
+	
+		if(dbNames.includes(process.env.ARANGODB_DB_NAME)) {
+			sails.log.info(`${FILE_PATH}: The database already has a database named '${process.env.ARANGODB_DB_NAME}'`);
+			sails.log.info(`${FILE_PATH}: Checking the existence of collection ${process.env.ARANGODB_DB_NAME}`);
+			
+			// use the existing database
+			db.useDatabase(process.env.ARANGODB_DB_NAME);
+			const collections = await db.collections();
+			
+			// check if the collection already exists
+			for([oneCollectionIndex, oneCollection] of collections.entries()) {
+				if(oneCollection.name === process.env.ARANGODB_DB_NAME) {
+					sails.log.info(`${FILE_PATH}: Collection '${process.env.ARANGODB_DB_NAME}' already exists. Launching the service...`);
+					return cb();
+				}
+			}
+
+			sails.log.info(`${FILE_PATH}: Collection '${process.env.ARANGODB_DB_NAME}' does not exist. Attempting to create it...`);
+			
+			const personsCollection = db.collection(process.env.ARANGODB_DB_NAME);
+			await personsCollection.create();
+
+			sails.log.info(`${FILE_PATH}: Successfully created the '${process.env.ARANGODB_DB_NAME}' collection. Launching the service...`);
+			return cb();
+		}
+
+		sails.log.info(`${FILE_PATH}: The database does not have a database named '${process.env.ARANGODB_DB_NAME}'. Creating the database...`);
+		
+		const newDb = await db.createDatabase(process.env.ARANGODB_DB_NAME);
+		
+		sails.log.info(`${FILE_PATH}: Successfully created the database:`);
+		sails.log.info(`${FILE_PATH}: ${JSON.stringify(newDb)}`);
+
+		// use the newly created database
+		db.useDatabase(process.env.ARANGODB_DB_NAME);
+
+		// Create the persons Collection
+		sails.log.info(`${FILE_PATH}: Attempting to create the '${process.env.ARANGODB_DB_NAME}' collection`);
+		
+		const personsCollection = db.collection(process.env.ARANGODB_DB_NAME);
+		await personsCollection.create();
+
+		sails.log.info(`${FILE_PATH}: Successfully created the '${process.env.ARANGODB_DB_NAME}' collection`);
+		return cb();
+
+	} catch (error) {
+		sails.log.info(error)
+		sails.log.info(`${FILE_PATH}: Error while initializing the database. Exiting...`);
+		process.exit(0);
+	}
 
 };
