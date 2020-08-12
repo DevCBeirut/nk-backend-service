@@ -10,7 +10,7 @@ ADD . /app
 RUN npm install
 
 # Add the environment variables
-ENV ARANGODB_HOST=localhost
+ENV ARANGODB_HOST=person-db
 ENV ARANGODB_PORT=8529
 ENV ARANGODB_USERNAME=root
 ENV ARANGODB_PASSWORD=openSesame
