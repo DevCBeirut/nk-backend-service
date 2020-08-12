@@ -10,9 +10,16 @@
  */
 
 module.exports.bootstrap = async (cb) => {
-
 	const FILE_PATH = __filename.split('config')[1];
-    const ARANGO_CLIENT = require('arangojs');
+	const ARANGO_CLIENT = require('arangojs');
+	
+	if(process.env.DEPLOYMENT_MODE === "dockerCompose") {
+		sails.log.info(`${FILE_PATH}: Starting the service using Docker Compose. Initializing the service in 20 seconds`);
+		const timeout = require("await-timeout");
+		await timeout.set(20000);
+		sails.log.info(`${FILE_PATH}: Timeout done. Initializing the service`);
+	}
+	
       
     const db = new ARANGO_CLIENT.Database({
         url: `http://${process.env.ARANGODB_USERNAME}:${process.env.ARANGODB_PASSWORD}@${process.env.ARANGODB_HOST}:${process.env.ARANGODB_PORT}/`,
