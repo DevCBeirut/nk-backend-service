@@ -8,7 +8,6 @@
  * For more information on configuration, check out:
  * https://sailsjs.com/config/http
  */
-
 module.exports.http = {
 
   /****************************************************************************
