@@ -31,7 +31,7 @@ jobs:
           echo "ADD . /app" >> Dockerfile
           echo "# Export Environment Variables" >> Dockerfile
           echo "ENV ARANGODB_HOST=localhost" >> Dockerfile
-          echo "ENV ARANGODB_PORT=1337" >> Dockerfile
+          echo "ENV ARANGODB_PORT=8529" >> Dockerfile
           echo "ENV ARANGODB_USERNAME=root" >> Dockerfile
           echo "ENV ARANGODB_PASSWORD=openSesame" >> Dockerfile
           echo "ENV ARANGODB_DB_NAME=persons" >> Dockerfile
