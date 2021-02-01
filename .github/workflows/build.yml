@@ -1,0 +1,56 @@
+on:
+  push:
+    branches: 
+      - master
+
+name: Build and Push a Docker Image
+
+jobs:      
+  build-push:
+    name: Build and Push a Docker Image
+    runs-on: ubuntu-latest
+        
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install the packages.
+        run: |
+          npm update
+          npm install
+
+    # Create a Dockerfile
+      - name: Create a Dockerfile file
+        run: |
+          echo Generating a Dockerfile
+          echo "# Use an official ubuntu runtime as a parent image" > Dockerfile
+          echo "FROM node:alpine3.12" >> Dockerfile
+          echo "# Set the working directory to /app" >> Dockerfile
+          echo "WORKDIR /app" >> Dockerfile
+          echo "# Copy the current directory contents into the container at /app" >> Dockerfile
+          echo "ADD . /app" >> Dockerfile
+          echo "# Export Environment Variables" >> Dockerfile
+          echo "ENV ARANGODB_HOST=localhost" >> Dockerfile
+          echo "ENV ARANGODB_PORT=1337" >> Dockerfile
+          echo "ENV ARANGODB_USERNAME=root" >> Dockerfile
+          echo "ENV ARANGODB_PASSWORD=openSesame" >> Dockerfile
+          echo "ENV ARANGODB_DB_NAME=persons" >> Dockerfile
+          echo "ENV ARANGO_MAX_RETRY_ATTEMPTS=3" >> Dockerfile
+          echo "ENV ARANGO_RETRY_DELAY=250" >> Dockerfile
+          echo "ENV JWT_SECRET=mydirtylittlesecret" >> Dockerfile
+          echo "ENV JWT_ACCESS_TOKEN_VALIDITY=3600" >> Dockerfile
+          echo "ENV JWT_REFRESH_TOKEN_VALIDITY=86400" >> Dockerfile
+          echo "CMD [\"node\", \"/app/app.js\"]" >> Dockerfile
+          echo Successfully generated a Dockerfile
+
+      - name: Login to Docker Hub
+        id: login-dockerhub
+        run: |
+          docker login -u {{ secrets.DOCKER_USERNAME }}-p {{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build, tag, and push images to Docker Hub
+        run: |
+          docker build -t nicolaselkhoury44/nk-backend-service:latest .
+          docker push nicolaselkhoury44/nk-backend-service:latest
+          docker tag nicolaselkhoury44/nk-backend-service:latest nicolaselkhoury44/nk-backend-service:${{ github.run_number }}
+          docker push nicolaselkhoury44/nk-backend-service:${{ github.run_number }}
